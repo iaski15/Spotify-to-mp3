@@ -1,39 +1,65 @@
 <Window x:Class="SpotifyToMp3.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
         Title="Spotify to MP3"
-        Width="540" Height="660"
+        Width="1000" Height="660" MinWidth="860" MinHeight="560"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None" ResizeMode="NoResize"
+        WindowStyle="None" ResizeMode="CanResizeWithGrip"
         Background="Transparent" AllowsTransparency="True"
         AllowDrop="True" FontFamily="Segoe UI"
         DragOver="Window_DragOver" Drop="Window_Drop">
 
     <Window.Resources>
+        <SolidColorBrush x:Key="Text" Color="#F1ECFA"/>
+        <SolidColorBrush x:Key="SubText" Color="#9A90B0"/>
+        <SolidColorBrush x:Key="Faint" Color="#5E5478"/>
+        <SolidColorBrush x:Key="Line" Color="#1F182E"/>
+
+        <LinearGradientBrush x:Key="Accent" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#B46CFF" Offset="0"/>
+            <GradientStop Color="#6D28D9" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- slim dark scrollbar -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="MinWidth" Value="8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border CornerRadius="4" Background="#2E2445" Margin="1,0"/>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="ChromeButton" TargetType="Button">
-            <Setter Property="Width" Value="42"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Foreground" Value="#9C92B2"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="#8C82A4"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="10"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bg" Background="Transparent" CornerRadius="7">
+                        <Border x:Name="bg" Background="Transparent" CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#1D142E"/>
+                                <Setter TargetName="bg" Property="Background" Value="#221A33"/>
                                 <Setter Property="Foreground" Value="#FFFFFF"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#251A3A"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -41,44 +67,36 @@
             </Setter>
         </Style>
 
-        <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#A855F7" Offset="0"/>
-            <GradientStop Color="#7C3AED" Offset="1"/>
-        </LinearGradientBrush>
-
-        <LinearGradientBrush x:Key="AccentBarBrush" StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Color="#C084FC" Offset="0"/>
-            <GradientStop Color="#7C3AED" Offset="1"/>
-        </LinearGradientBrush>
-
-        <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="FontSize" Value="15"/>
+        <Style x:Key="PillButton" TargetType="Button">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Padding" Value="26,0"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <Border x:Name="bg" CornerRadius="12" Background="{StaticResource AccentBrush}"/>
-                            <Border x:Name="hover" CornerRadius="12" Background="#FFFFFF" Opacity="0"/>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border x:Name="bg" CornerRadius="23" Background="{StaticResource Accent}"/>
+                            <Border x:Name="hl" CornerRadius="23" Background="White" Opacity="0"/>
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="hover" Property="Opacity" Value="0.09"/>
+                                <Setter TargetName="hl" Property="Opacity" Value="0.1"/>
                                 <Setter TargetName="bg" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect BlurRadius="24" ShadowDepth="0" Color="#8B5CF6" Opacity="0.5"/>
+                                        <DropShadowEffect BlurRadius="26" ShadowDepth="0" Color="#9D4EFF" Opacity="0.55"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="hover" Property="Opacity" Value="0.18"/>
+                                <Setter TargetName="hl" Property="Opacity" Value="0.2"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="bg" Property="Opacity" Value="0.35"/>
+                                <Setter Property="Opacity" Value="0.35"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -86,27 +104,25 @@
             </Setter>
         </Style>
 
-        <Style x:Key="GhostButton" TargetType="Button">
-            <Setter Property="Height" Value="38"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="#CDC4DE"/>
+        <Style x:Key="SoftButton" TargetType="Button">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Foreground" Value="#D6CDE8"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bg" CornerRadius="10" Background="#130D20" BorderBrush="#2A2040" BorderThickness="1">
+                        <Border x:Name="bg" CornerRadius="17" Background="#1A1428" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#1E1530"/>
-                                <Setter TargetName="bg" Property="BorderBrush" Value="#3D2E5E"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#0E0918"/>
+                                <Setter TargetName="bg" Property="Background" Value="#271E3B"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="bg" Property="Opacity" Value="0.45"/>
+                                <Setter Property="Opacity" Value="0.4"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -114,120 +130,160 @@
             </Setter>
         </Style>
 
-        <Style x:Key="LinkButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#B989F5"/>
-            <Setter Property="FontSize" Value="12.5"/>
+        <!-- sidebar format option: two-line card -->
+        <Style x:Key="FormatOption" TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,0,6"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <TextBlock x:Name="txt" Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"/>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="txt" Property="Foreground" Value="#D4BFFF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="FormatRadio" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="#9A90B0"/>
-            <Setter Property="FontSize" Value="12.5"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Foreground" Value="#B9AFCF"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="bg" CornerRadius="7" Background="Transparent" Padding="14,7">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border x:Name="bg" CornerRadius="10" Background="Transparent" BorderThickness="1"
+                                BorderBrush="Transparent" Padding="12,9">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border x:Name="dot" Width="14" Height="14" CornerRadius="7" Margin="0,2,10,0"
+                                        VerticalAlignment="Top" BorderBrush="#4A3F66" BorderThickness="2"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{TemplateBinding Content}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{TemplateBinding Foreground}"/>
+                                    <TextBlock Text="{TemplateBinding Tag}" FontSize="11" Foreground="#6E6488"
+                                               TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#14101F"/>
                             </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="False"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="bg" Property="Background" Value="#1E1530"/>
-                                <Setter Property="Foreground" Value="#CDC4DE"/>
-                            </MultiTrigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#1A1230"/>
+                                <Setter TargetName="bg" Property="BorderBrush" Value="#3B2A5E"/>
+                                <Setter TargetName="dot" Property="Background" Value="{StaticResource Accent}"/>
+                                <Setter TargetName="dot" Property="BorderBrush" Value="#C99BFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <Style x:Key="FlatTextBox" TargetType="TextBox">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#EFEBF6"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="CaretBrush" Value="#A855F7"/>
-        </Style>
-
-        <ControlTemplate x:Key="SlickProgressBar" TargetType="ProgressBar">
+        <ControlTemplate x:Key="ThinBar" TargetType="ProgressBar">
             <Grid>
-                <Border x:Name="PART_Track" Background="#191226" CornerRadius="4"/>
-                <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="4"
-                        Background="{StaticResource AccentBarBrush}"/>
+                <Border x:Name="PART_Track" Background="#1A1428"/>
+                <Border x:Name="PART_Indicator" HorizontalAlignment="Left">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#C99BFF" Offset="0"/>
+                            <GradientStop Color="#7C3AED" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
             </Grid>
         </ControlTemplate>
-
     </Window.Resources>
 
-    <Border CornerRadius="14" Background="#07050C" BorderBrush="#231A38" BorderThickness="1"
-            MouseLeftButtonDown="Chrome_MouseLeftButtonDown">
+    <Border CornerRadius="16" Background="#0E0B16" BorderBrush="#241B38" BorderThickness="1" ClipToBounds="True">
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- Title bar -->
-            <Grid Grid.Row="0" Height="46" Margin="14,10,10,0">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="22" Height="22" CornerRadius="6" Background="{StaticResource AccentBrush}">
-                        <TextBlock Text="&#xE90B;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <TextBlock Text="Spotify to MP3" Margin="9,0,0,0" VerticalAlignment="Center"
-                               FontSize="12" FontWeight="SemiBold" Foreground="#9C92B2"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Click="Minimize_Click"/>
-                    <Button Style="{StaticResource ChromeButton}" Content="&#xE8BB;" Click="Close_Click"/>
-                </StackPanel>
-            </Grid>
+            <!-- ============ Sidebar ============ -->
+            <Border Grid.Column="0" Background="#08060D" CornerRadius="16,0,0,16"
+                    MouseLeftButtonDown="Chrome_MouseLeftButtonDown">
+                <DockPanel Margin="18,20,18,18">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Border Width="34" Height="34" CornerRadius="10" Background="{StaticResource Accent}">
+                            <TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" FontSize="15" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Spotify to MP3" FontSize="14.5" FontWeight="Bold" Foreground="{StaticResource Text}"/>
+                            <TextBlock Text="Links in, songs out" FontSize="11" Foreground="{StaticResource Faint}"/>
+                        </StackPanel>
+                    </StackPanel>
 
-            <!-- Main content -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="34,14,34,6">
+                    <!-- footer of sidebar -->
+                    <StackPanel DockPanel.Dock="Bottom">
+                        <Button x:Name="OpenFolderButton" Style="{StaticResource SoftButton}" HorizontalAlignment="Stretch"
+                                Click="OpenFolder_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="Open download folder" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="No login. Audio is matched on YouTube by song name and length."
+                                   FontSize="10.5" Foreground="#3F3657" TextWrapping="Wrap" Margin="2,12,0,0"/>
+                    </StackPanel>
 
-                    <TextBlock Text="Grab songs off Spotify."
-                               FontSize="24" FontWeight="SemiBold" Foreground="#EFEAF8"/>
-                    <TextBlock Text="Paste a track, album or playlist link - we find the song and save MP3s locally."
-                               FontSize="12.5" Foreground="#9A90B0" Margin="0,6,0,0"/>
+                    <StackPanel Margin="0,30,0,0">
+                        <TextBlock Text="FORMAT" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Faint}"
+                                   Margin="2,0,0,10"/>
+                        <StackPanel x:Name="FormatPanel">
+                            <RadioButton x:Name="OriginalRadio" GroupName="fmt" IsChecked="True" Style="{StaticResource FormatOption}"
+                                         Content="Original M4A" Tag="Best quality. YouTube's AAC, untouched."/>
+                            <RadioButton x:Name="Mp3320Radio" GroupName="fmt" Style="{StaticResource FormatOption}"
+                                         Content="MP3 · 320 kbps" Tag="Plays on anything."/>
+                            <RadioButton x:Name="Mp3256Radio" GroupName="fmt" Style="{StaticResource FormatOption}"
+                                         Content="MP3 · 256 kbps" Tag="Smaller files."/>
+                            <RadioButton x:Name="Mp3192Radio" GroupName="fmt" Style="{StaticResource FormatOption}"
+                                         Content="MP3 · 192 kbps" Tag="Smallest."/>
+                        </StackPanel>
 
-                    <!-- URL input -->
-                    <Border Margin="0,18,0,0" Padding="14,0,8,0" CornerRadius="12"
-                            Background="#110C1D" BorderBrush="#2A2040" BorderThickness="1">
-                        <Grid Height="44">
+                        <TextBlock Text="SAVE TO" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Faint}"
+                                   Margin="2,22,0,8"/>
+                        <Border CornerRadius="10" Background="#110D1B" Padding="12,10">
+                            <StackPanel>
+                                <TextBlock x:Name="FolderText" FontSize="12" Foreground="#C9BFDD"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <Button x:Name="ChangeFolderButton" Content="Change folder" Style="{StaticResource SoftButton}"
+                                        Height="28" Margin="0,10,0,0" HorizontalAlignment="Left"
+                                        Click="ChangeFolder_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ Main ============ -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- top bar: link box + window buttons -->
+                <Grid Grid.Row="0" Margin="24,16,12,0" Panel.ZIndex="2" Background="Transparent"
+                      MouseLeftButtonDown="Chrome_MouseLeftButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border CornerRadius="22" Background="#16111F" BorderBrush="#2A2040" BorderThickness="1"
+                            Height="44" Padding="16,0,5,0" MaxWidth="620" HorizontalAlignment="Stretch">
+                        <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="UrlBox" Grid.Column="0" Style="{StaticResource FlatTextBox}"
-                                     KeyDown="UrlBox_KeyDown"/>
-                            <TextBlock Text="https://open.spotify.com/track/..." FontSize="13.5" Foreground="#4A4066"
-                                       IsHitTestVisible="False" VerticalAlignment="Center" Margin="1,0,0,0">
+                            <TextBlock Text="&#xE71B;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="#6E6488"
+                                       VerticalAlignment="Center"/>
+                            <TextBox x:Name="UrlBox" Grid.Column="1" Margin="10,0" Background="Transparent" BorderThickness="0"
+                                     Foreground="{StaticResource Text}" CaretBrush="#B46CFF" FontSize="13.5"
+                                     VerticalContentAlignment="Center" KeyDown="UrlBox_KeyDown"/>
+                            <TextBlock Grid.Column="1" Margin="12,0" Text="Paste a Spotify song, album or playlist link"
+                                       FontSize="13.5" Foreground="#4A4066" IsHitTestVisible="False" VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -239,92 +295,185 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Button x:Name="PasteButton" Grid.Column="1" Style="{StaticResource GhostButton}"
-                                    Width="76" Content="Paste" Click="Paste_Click"/>
+                            <Button x:Name="PasteButton" Grid.Column="2" Style="{StaticResource SoftButton}" Click="Paste_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE77F;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Paste" Margin="7,0,0,0"/>
+                                </StackPanel>
+                            </Button>
                         </Grid>
                     </Border>
-
-                    <!-- Quality picker -->
-                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                        <TextBlock Text="QUALITY" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold"
-                                   Foreground="#6E6488"/>
-                        <Border Margin="12,0,0,0" CornerRadius="10" Background="#110C1D"
-                                BorderBrush="#2A2040" BorderThickness="1" Padding="3">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton x:Name="Kbps192Radio" Content="192 kbps" GroupName="kbps"
-                                             Style="{StaticResource FormatRadio}"/>
-                                <RadioButton x:Name="Kbps256Radio" Content="256 kbps" GroupName="kbps" IsChecked="True"
-                                             Style="{StaticResource FormatRadio}"/>
-                                <RadioButton x:Name="Kbps320Radio" Content="320 kbps" GroupName="kbps"
-                                             Style="{StaticResource FormatRadio}"/>
-                            </StackPanel>
-                        </Border>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="12,0,0,0">
+                        <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Click="Minimize_Click"/>
+                        <Button Style="{StaticResource ChromeButton}" Content="&#xE8BB;" Click="Close_Click"/>
                     </StackPanel>
+                </Grid>
 
-                    <!-- Preview card -->
-                    <Border x:Name="PreviewCard" Margin="0,14,0,0" CornerRadius="12" Background="#100B1A"
-                            BorderBrush="#271D3F" BorderThickness="1" Padding="10" Visibility="Collapsed">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Width="76" Height="76" CornerRadius="8">
+                <!-- blurred cover glow behind header -->
+                <Rectangle Grid.Row="0" Grid.RowSpan="2" Height="320" VerticalAlignment="Top" Margin="-60,-60,-60,0"
+                           Opacity="0.4" IsHitTestVisible="False">
+                    <Rectangle.Fill>
+                        <ImageBrush x:Name="GlowBrush" Stretch="UniformToFill"/>
+                    </Rectangle.Fill>
+                    <Rectangle.Effect>
+                        <BlurEffect Radius="90" KernelType="Gaussian"/>
+                    </Rectangle.Effect>
+                </Rectangle>
+                <Rectangle Grid.Row="0" Grid.RowSpan="2" Height="320" VerticalAlignment="Top" IsHitTestVisible="False">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#000E0B16" Offset="0"/>
+                            <GradientStop Color="#FF0E0B16" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+
+                <!-- empty state -->
+                <StackPanel x:Name="EmptyState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Margin="0,0,0,40">
+                    <Border Width="84" Height="84" CornerRadius="42" Background="#16111F" HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="30" Foreground="#B46CFF"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Drop a Spotify link to start" FontSize="22" FontWeight="SemiBold"
+                               Foreground="{StaticResource Text}" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                    <TextBlock Text="Paste it above or drag it anywhere into this window."
+                               FontSize="13" Foreground="{StaticResource SubText}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                    <TextBlock Text="Songs · Albums · Playlists" FontSize="11.5" Foreground="{StaticResource Faint}"
+                               HorizontalAlignment="Center" Margin="0,16,0,0"/>
+                </StackPanel>
+
+                <!-- loaded content -->
+                <Grid x:Name="ContentPanel" Grid.Row="1" Margin="24,22,14,0" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- header -->
+                    <Grid Grid.Row="0" Margin="0,0,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Width="150" Height="150" CornerRadius="10" Background="#1A1428">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="30" ShadowDepth="6" Opacity="0.6" Color="Black"/>
+                            </Border.Effect>
+                            <Border CornerRadius="10">
                                 <Border.Background>
                                     <ImageBrush x:Name="CoverBrush" Stretch="UniformToFill"/>
                                 </Border.Background>
                             </Border>
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                <TextBlock x:Name="PreviewTitle" Text="" FontSize="13.5" FontWeight="SemiBold"
-                                           Foreground="#ECE6F6" TextWrapping="Wrap" MaxHeight="40"
-                                           TextTrimming="CharacterEllipsis" LineHeight="18"/>
-                                <TextBlock x:Name="PreviewArtist" Text="" FontSize="11.5" Foreground="#9A90B0" Margin="0,4,0,0"/>
-                                <TextBlock x:Name="PreviewMeta" Text="" FontSize="11.5" Foreground="#6E6488" Margin="0,2,0,0"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="22,0,0,0" VerticalAlignment="Bottom">
+                            <TextBlock x:Name="KindText" FontSize="11" FontWeight="Bold" Foreground="#C9BFDD"/>
+                            <TextBlock x:Name="TitleText" FontSize="30" FontWeight="Bold" Foreground="White"
+                                       TextTrimming="CharacterEllipsis" Margin="0,4,0,0"/>
+                            <TextBlock x:Name="MetaText" FontSize="13" Foreground="{StaticResource SubText}" Margin="0,6,0,0"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button x:Name="DownloadButton" Style="{StaticResource PillButton}" Click="Download_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="DownloadLabel" Text="Download" Margin="9,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="CancelButton" Style="{StaticResource SoftButton}" Margin="12,0,0,0"
+                                        Visibility="Collapsed" Click="Cancel_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Cancel" Margin="7,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
-                        </Grid>
-                    </Border>
+                        </StackPanel>
+                    </Grid>
 
-                    <!-- Actions -->
-                    <Button x:Name="ConvertButton" Margin="0,16,0,0" Style="{StaticResource PrimaryButton}"
-                            Content="Download MP3" Click="Convert_Click"/>
+                    <!-- column headers -->
+                    <Grid Grid.Row="1" Margin="12,22,22,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="36"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="170"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="#" FontSize="11" Foreground="{StaticResource Faint}"/>
+                        <TextBlock Grid.Column="1" Text="TITLE" FontSize="11" Foreground="{StaticResource Faint}"/>
+                        <TextBlock Grid.Column="2" Text="TIME" FontSize="11" Foreground="{StaticResource Faint}"/>
+                        <TextBlock Grid.Column="3" Text="STATUS" FontSize="11" Foreground="{StaticResource Faint}"/>
+                    </Grid>
+                    <Border Grid.Row="1" Height="1" Background="{StaticResource Line}" VerticalAlignment="Bottom"
+                            Margin="0,0,10,-8"/>
 
-                    <Button x:Name="OpenFolderButton" Margin="0,12,0,0" Style="{StaticResource GhostButton}"
-                            Content="Show in folder" Visibility="Collapsed" Click="OpenFolder_Click"/>
+                    <ListBox x:Name="TrackList" Grid.Row="2" Margin="0,12,0,8" Background="Transparent" BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Focusable" Value="False"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="row" CornerRadius="8" Background="Transparent" Padding="12,7" Margin="0,0,10,0">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="row" Property="Background" Value="#17121F"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="170"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Number}" FontSize="12.5" Foreground="#6E6488" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Title}" FontSize="13.5" Foreground="#F1ECFA"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Artist}" FontSize="11.5" Foreground="#8C82A4"
+                                                   TextTrimming="CharacterEllipsis" Margin="0,1,0,0"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{Binding Duration}" FontSize="12.5" Foreground="#8C82A4"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding Status}" Foreground="{Binding StatusColor}"
+                                               FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Status}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
 
-                    <!-- Progress -->
-                    <StackPanel x:Name="ProgressSection" Margin="0,16,0,0" Visibility="Collapsed">
-                        <Grid>
+                <!-- bottom status bar -->
+                <Border Grid.Row="2" Background="#0A0811" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,16,0">
+                    <Grid>
+                        <ProgressBar x:Name="DownloadBar" Height="3" VerticalAlignment="Top" Minimum="0" Maximum="100"
+                                     Template="{StaticResource ThinBar}" Visibility="Hidden"/>
+                        <Grid Margin="24,13,28,13">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="PhaseText" Grid.Column="0" Text="" FontSize="12.5" Foreground="#9A90B0"
-                                       TextTrimming="CharacterEllipsis"/>
-                            <TextBlock x:Name="PercentText" Grid.Column="1" Text="" FontSize="12.5"
-                                       FontWeight="SemiBold" Foreground="#ECE6F6"/>
+                            <TextBlock x:Name="StatusText" FontSize="12.5" Foreground="#9A90B0"
+                                       TextTrimming="CharacterEllipsis" Text="Ready."/>
+                            <TextBlock x:Name="PercentText" Grid.Column="1" FontSize="12.5" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Text}"/>
                         </Grid>
-                        <ProgressBar x:Name="DownloadBar" Margin="0,10,0,0" Height="8" Minimum="0" Maximum="100"
-                                     Template="{StaticResource SlickProgressBar}"/>
-                        <Button x:Name="CancelButton" Margin="0,10,0,0" Style="{StaticResource LinkButton}"
-                                Content="Cancel" HorizontalAlignment="Right" Click="Cancel_Click"/>
-                    </StackPanel>
-
-                    <!-- Status -->
-                    <TextBlock x:Name="StatusText" Margin="0,15,0,0" FontSize="12.5" Foreground="#6E6488"
-                               TextWrapping="Wrap" Text="Ready. Paste a Spotify link or drop one anywhere in this window."/>
-
-                    <TextBlock x:Name="SkippedText" Margin="0,6,0,0" FontSize="11" Foreground="#5A4E78"
-                               TextWrapping="Wrap" Visibility="Collapsed"/>
-
-                    <TextBlock Text="No Spotify login needed - tracks are matched from their name."
-                               FontSize="11" Foreground="#3E3554" Margin="0,8,0,0"/>
-                </StackPanel>
-            </ScrollViewer>
-
-            <!-- Footer -->
-            <TextBlock Grid.Row="2" Text="Encoded locally on your machine - nothing leaves your PC."
-                       FontSize="10.5" Foreground="#302946" HorizontalAlignment="Center" Margin="0,0,0,14"/>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 </Window>
