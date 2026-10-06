@@ -6,16 +6,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyName>Spotify to MP3</AssemblyName>
+    <RootNamespace>SpotifyToMp3</RootNamespace>
+    <!-- `dotnet publish` -> one "Spotify to MP3.exe" in release\, nothing else to carry around. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <DebugType>none</DebugType>
+    <PublishDir>release\</PublishDir>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="3.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Tools\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
