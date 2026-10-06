@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     private static readonly string FolderSettingPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SpotifyToMp3", "folder.txt");
 
-    private const string Waiting = "#6E6488", Working = "#C99BFF", Ok = "#4ADE80", Bad = "#FF6B6B";
+    private const string Waiting = "#B59A82", Working = "#C4652A", Ok = "#3F9A58", Bad = "#CF4A3F"; // shiba palette
 
     private CancellationTokenSource? _cts;
     private bool _busy;
@@ -47,6 +47,28 @@ public partial class MainWindow : Window
             _folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Spotify to MP3");
         FolderText.Text = _folder;
         FolderText.ToolTip = _folder;
+        Icon = ShibaFace.Render(64, ShibaMood.Neutral);
+    }
+
+    private void SetMascot(ShibaMood mood, string says)
+    {
+        Mascot.Mood = mood;
+        MascotText.Text = says;
+    }
+
+    // Sidebar steps: white dot + check when done, like Shibaberg's.
+    private void SetSteps(bool linked, bool downloaded)
+    {
+        var steps = new[] { (Step1Dot, Step1Num, Step1Text, linked), (Step2Dot, Step2Num, Step2Text, linked), (Step3Dot, Step3Num, Step3Text, downloaded) };
+        for (var i = 0; i < steps.Length; i++)
+        {
+            var (dot, num, text, done) = steps[i];
+            dot.Fill = done ? Brushes.White : (Brush)FindResource("FurDark");
+            num.Text = done ? "✓" : (i + 1).ToString();
+            num.Foreground = (Brush)FindResource(done ? "Accent2" : "CreamText");
+            text.Foreground = done ? Brushes.White : (Brush)FindResource("CreamText");
+            text.FontWeight = done ? FontWeights.Bold : FontWeights.Normal;
+        }
     }
 
     // ---- window chrome ----
@@ -83,10 +105,20 @@ public partial class MainWindow : Window
     {
         e.Effects = e.Data.GetDataPresent(DataFormats.StringFormat) ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
+        // the drop-zone shiba perks up while something is dragged over the window
+        DropShiba.Mood = ShibaMood.Happy;
+        DropRect.Fill = (Brush)FindResource("Bg");
+    }
+
+    private void Window_DragLeave(object sender, DragEventArgs e)
+    {
+        DropShiba.Mood = ShibaMood.Neutral;
+        DropRect.Fill = Brushes.White;
     }
 
     private void Window_Drop(object sender, DragEventArgs e)
     {
+        Window_DragLeave(sender, e);
         if (e.Data.GetData(DataFormats.StringFormat) is string text && text.Trim().Length > 0)
         {
             UrlBox.Text = text.Trim();
@@ -181,12 +213,18 @@ public partial class MainWindow : Window
         {
             var (kind, id) = ParseSpotifyLink(raw);
             SetStatus("Reading Spotify...", Working);
-            ShowEntity(await FetchEntityAsync(kind, id));
+            SetMascot(ShibaMood.Neutral, "Sniffing around Spotify...");
+            var entity = await FetchEntityAsync(kind, id);
+            ShowEntity(entity);
             SetStatus($"Ready to download to {_folder}", Waiting);
+            SetMascot(ShibaMood.Happy, entity.IsCollection
+                ? $"Ooh, {entity.Title}! {Plural(entity.Tracks.Count)} to fetch."
+                : $"Ooh, {entity.Title}! Press Download and I'll fetch it.");
         }
         catch (Exception ex)
         {
             SetStatus(ex is SpotifyLinkException ? ex.Message : FriendlyError(ex), Bad);
+            SetMascot(ShibaMood.Sad, "Oops... that link didn't work. The status bar says why.");
         }
         finally
         {
@@ -226,11 +264,11 @@ public partial class MainWindow : Window
         DownloadLabel.Text = entity.IsCollection ? $"Download all {tracks.Count}" : "Download";
 
         CoverBrush.ImageSource = null;
-        GlowBrush.ImageSource = null;
         if (entity.CoverUrl is not null) _ = LoadCoverAsync(entity.CoverUrl);
 
         EmptyState.Visibility = Visibility.Collapsed;
         ContentPanel.Visibility = Visibility.Visible;
+        SetSteps(linked: true, downloaded: false);
     }
 
     private static IReadOnlyList<TrackEntry> Tracks(SpotifyEntity e) =>
@@ -248,7 +286,6 @@ public partial class MainWindow : Window
             bmp.EndInit();
             bmp.Freeze();
             CoverBrush.ImageSource = bmp;
-            GlowBrush.ImageSource = bmp;
         }
         catch { /* cover is optional */ }
     }
@@ -410,6 +447,7 @@ public partial class MainWindow : Window
                 }
 
                 SetStatus($"{i + 1}/{tracks.Count}  ·  {track.Artist} - {track.Title}", Working);
+                SetMascot(ShibaMood.Neutral, tracks.Count == 1 ? "On it! Digging up the song..." : $"On it! Fetching song {i + 1} of {tracks.Count}...");
                 try
                 {
                     await SaveTrackAsync(track, path, row, i, tracks.Count, ct);
@@ -429,15 +467,21 @@ public partial class MainWindow : Window
                     ? $"Done! Saved {Plural(saved)} to {dir}"
                     : $"Saved {saved} of {Plural(tracks.Count)} to {dir} (hover a red status for why)",
                 saved == 0 ? Bad : Ok);
+            if (saved == tracks.Count) SetMascot(ShibaMood.Happy, "All done! Go have fun!");
+            else if (saved == 0) SetMascot(ShibaMood.Sad, "Oops... I couldn't fetch any of them. The list says why.");
+            else SetMascot(ShibaMood.Sad, $"Got {saved} of {tracks.Count}... some smelled off. Peek at the list?");
+            SetSteps(linked: true, downloaded: saved > 0);
         }
         catch (OperationCanceledException)
         {
             foreach (var r in _rows.Skip(i)) r.Set("Cancelled", Waiting);
             SetStatus($"Cancelled. Saved {Plural(saved)}.", Waiting);
+            SetMascot(ShibaMood.Sleepy, "Okay, stopped. Nap time.");
         }
         catch (Exception ex)
         {
             SetStatus(FriendlyError(ex), Bad);
+            SetMascot(ShibaMood.Sad, "Oops... that didn't work. The status bar says why.");
         }
         finally
         {
@@ -527,8 +571,10 @@ public partial class MainWindow : Window
         _busy = busy;
         UrlBox.IsEnabled = PasteButton.IsEnabled = !busy;
         FormatPanel.IsEnabled = ChangeFolderButton.IsEnabled = !busy;
-        DownloadButton.IsEnabled = !busy;
+        DownloadButton.IsEnabled = !busy && _entity is not null;
+        // while downloading, the red Stop button takes Download's place
         CancelButton.Visibility = busy && !loading ? Visibility.Visible : Visibility.Collapsed;
+        DownloadButton.Visibility = busy && !loading ? Visibility.Hidden : Visibility.Visible;
         DownloadBar.Visibility = busy ? Visibility.Visible : Visibility.Hidden;
         DownloadBar.IsIndeterminate = loading;
         if (!busy) SetProgress(0, show: false);
@@ -544,7 +590,7 @@ public partial class MainWindow : Window
     {
         StatusText.Text = message;
         StatusText.ToolTip = message;
-        StatusText.Foreground = (Brush)new BrushConverter().ConvertFromString(color == Waiting ? "#9A90B0" : color)!;
+        StatusDot.Fill = (Brush)new BrushConverter().ConvertFromString(color)!;
     }
 
     private static string DurationLabel(int ms)

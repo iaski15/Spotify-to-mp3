@@ -56,10 +56,11 @@ SpotifyToMp3.csproj      .NET 10 WPF project (only package: NAudio)
 AssemblyInfo.cs          Application metadata
 App.xaml(.cs)             Application entry point
 MainWindow.xaml(.cs)      Entire UI + download/encoding logic
+Shiba.cs                  The shiba mascot (vector drawing, 4 moods) + sidebar paw prints, ported from Shibaberg
 YouTube.cs                YouTube search + stream download (shared with my YouTube to MP3 app)
 ```
 
 ## Tech stack
 
-- C# / .NET 10, WPF (custom purple/black UI, no third-party UI libraries)
+- C# / .NET 10, WPF (Shibaberg-style shiba UI: cream + fur orange, mascot that reacts to what's happening; no third-party UI libraries)
 - [NAudio](https://github.com/naudio/NAudio) — Media Foundation MP3 encoding
